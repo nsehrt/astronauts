@@ -3,7 +3,6 @@
 #include <httplib.h>
 #include <nlohmann/json.hpp>
 
-using Json = nlohmann::json;
 
 bool AstronautApp::OnUserCreate()
 {
@@ -15,7 +14,7 @@ bool AstronautApp::OnUserCreate()
 		{
 			try
 			{
-				const nlohmann::json astronautJson =  Json::parse(result->body);
+				const nlohmann::json astronautJson =  nlohmann::json::parse(result->body);
 
 				for(const auto& element : astronautJson["people"])
 				{
@@ -24,7 +23,7 @@ bool AstronautApp::OnUserCreate()
 
 
 			}
-			catch(Json::parse_error& e)
+			catch(nlohmann::json::parse_error& e)
 			{
 				std::cerr << "error handling json data: " << e.what() << std::endl;
 				return false;
@@ -48,10 +47,11 @@ bool AstronautApp::OnUserCreate()
 		std::ranges::sort(v.astronauts);
 	}
 
+
 	int c = 1;
 	for(auto& v : spaceCrafts | std::views::values)
 	{
-		v.angle = 2.0f * PI / static_cast<float>(c);
+		v.angle = 2.0f * PI / spaceCrafts.size() * static_cast<float>(c);
 		c++;
 	}
 
@@ -72,7 +72,6 @@ bool AstronautApp::OnUserUpdate(const float fElapsedTime)
 	const auto earthPos = olc::vi2d(dims.x/2 - earthSprite->width / 2, dims.y / 2 - earthSprite->height / 2);
 	DrawSprite(earthPos, earthSprite.get());
 
-	const auto mouse = GetMousePos();
 	chosenSpaceCraft = "";
 
 	for(auto& [name, craft] : spaceCrafts)
@@ -83,7 +82,7 @@ bool AstronautApp::OnUserUpdate(const float fElapsedTime)
 		craft.pos = {dims.x / 2, dims.y / 2};
 		craft.pos += olc::vi2d{fpos};
 
-		if((mouse - craft.pos).mag() <= 32)
+		if((GetMousePos() - craft.pos).mag() <= 32)
 		{
 			chosenSpaceCraft = name;
 		}
