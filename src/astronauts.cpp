@@ -43,6 +43,11 @@ bool AstronautApp::OnUserCreate()
 		return false;
 	}
 
+	for(auto& v : spaceCrafts | std::views::values)
+	{
+		std::ranges::sort(v.astronauts);
+	}
+
 	int c = 1;
 	for(auto& v : spaceCrafts | std::views::values)
 	{
